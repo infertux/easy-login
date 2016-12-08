@@ -1,0 +1,32 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>EasyLogin</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-4 offset-xs-4 mt-2 p-2 rounded bg-faded">
+        <h4 class="text-xs-center mb-2">Sign in / Sign up</h4>
+        <div id="elm-easy-login-app"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="easy-login.js"></script>
+  <script>
+    const elmEasyLoginDiv = document.querySelector("#elm-easy-login-app");
+    const elmEasyLoginApp = Elm.EasyLogin.embed(elmEasyLoginDiv,
+      { loginPath:        "/api/sessions"
+      , lostPasswordPath: "/api/lost-password?userId=%s" }
+    );
+
+    elmEasyLoginApp.ports.onSuccess.subscribe(function(userId) {
+        location = "/dashboard";
+    });
+  </script>
+</body>
+</html>
