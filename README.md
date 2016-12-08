@@ -1,6 +1,8 @@
 # EasyLogin.elm
 
-Status: alpha
+[![build status](https://gitlab.com/infertux/easy-login/badges/master/build.svg)](https://gitlab.com/infertux/easy-login/commits/master)
+
+**Status: alpha**
 
 A small app providing a user-friendly way to sign up and sign in.
 
