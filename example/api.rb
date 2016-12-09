@@ -12,28 +12,46 @@ get "/" do
   redirect to("/index.html")
 end
 
+# Expected API:
+# email does not exist: 2xx and non-null user-id
+# email does exist and empty password: 401
+# email does exist and incorrect password: 401
+# email does exist and correct password: 2xx and non-null user-id
+
 post "/api/sessions" do
   body = JSON.parse request.body.read
   attributes = body.dig("data", "attributes")
+  email = attributes.fetch("email")
   password = attributes.fetch("password")
-  user_id = password == "rubbish" ? SecureRandom.uuid : ""
 
-  response = {
-    data: {
-      type: "sessions",
-      id: SecureRandom.uuid,
-      attributes: {
-        "user-id" => user_id
-      }
-    }
-  }
+  content_type "application/vnd.api+json"
 
-  session[:user_id] = user_id unless user_id.empty?
-
-  status 201
-  body JSON.dump(response)
+  if email == "user1@example.net"
+    if password == "rubbish"
+      user_id = SecureRandom.uuid
+      session[:user_id] = user_id
+      status 201
+      body JSON.dump(json_response(user_id))
+    else
+      status 401
+    end
+  else
+    user_id = SecureRandom.uuid
+    status 200
+    body JSON.dump(json_response(user_id))
+  end
 end
 
 get "/dashboard" do
   "Welcome #{request.cookies.inspect}!"
+end
+
+def json_response(user_id)
+  {
+    data: {
+      type: "sessions",
+      id: SecureRandom.uuid,
+      attributes: { "user-id" => user_id }
+    }
+  }
 end

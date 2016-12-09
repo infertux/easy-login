@@ -20,6 +20,10 @@ And until [U2F](https://en.wikipedia.org/wiki/Universal_2nd_Factor) or something
 - if the email does exist, ask for password
 - if the user can't remember their password, provide an obvious button to send a login link by email (a la Medium)
 
+## Usage
+
+See [example/index.html](example/index.html)
+
 ## License
 
 MIT

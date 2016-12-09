@@ -1,5 +1,6 @@
 port module EasyLogin.Update exposing (init, update)
 
+import Http
 import EasyLogin.Model exposing (..)
 import EasyLogin.Decoder as Decoder
 
@@ -19,24 +20,16 @@ update msg model =
     case msg of
         Input id value ->
             let
-                fieldVisibility id =
-                    case id of
-                        Email ->
-                            model.email.visible
-
-                        Password ->
-                            model.password.visible
-
-                newField id =
-                    { value = value, error = Nothing, visible = fieldVisibility id }
+                newField field =
+                    { value = value, error = Nothing, visible = field.visible }
 
                 newModel =
                     case id of
                         Email ->
-                            { model | email = newField Email }
+                            { model | email = newField model.email }
 
                         Password ->
-                            { model | password = newField Password }
+                            { model | password = newField model.password }
             in
                 ( newModel, Cmd.none )
 
@@ -51,46 +44,51 @@ update msg model =
         LogInResult (Ok document) ->
             let
                 userId =
-                    Decoder.decodeSession document
-
-                visible =
-                    String.isEmpty model.email.value |> not
-
-                error =
-                    if passwordField.visible && String.isEmpty userId then
-                        Just "Invalid password"
-                    else
-                        Nothing
-
-                passwordField =
-                    model.password
-
-                newPasswordField =
-                    { passwordField | visible = visible, error = error }
+                    Decoder.getUserId document
 
                 reload =
-                    not (String.isEmpty userId)
+                    userId
+                        /= Nothing
+                        && not (String.isEmpty model.password.value)
             in
                 ( { model
                     | userId = userId
-                    , password = newPasswordField
                     , loading = reload
                   }
                 , if reload then
-                    onSuccess userId
+                    onSuccess <| Maybe.withDefault "" userId
                   else
                     Cmd.none
                 )
 
         LogInResult (Err error) ->
             let
-                oldEmail =
-                    model.email
+                message =
+                    case error of
+                        Http.BadStatus response ->
+                            if response.status.code == 401 then
+                                if String.isEmpty model.password.value then
+                                    Nothing
+                                else
+                                    Just "Wrong password"
+                            else
+                                Just response.status.message
 
-                email =
-                    { oldEmail | error = Just (toString error) }
+                        error ->
+                            Just (toString error)
+
+                oldPassword =
+                    model.password
+
+                password =
+                    { oldPassword | error = message, visible = True }
             in
-                ( { model | loading = False, email = email }, Cmd.none )
+                ( { model
+                    | loading = False
+                    , password = password
+                  }
+                , Cmd.none
+                )
 
         SendPassword ->
             Debug.crash model.email.value

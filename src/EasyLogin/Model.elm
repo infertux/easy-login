@@ -19,7 +19,7 @@ type FieldId
 type alias Model =
     { email : Field
     , password : Field
-    , userId : String
+    , userId : Maybe String
     , loading : Bool
     , settings : Settings
     }
@@ -57,7 +57,7 @@ initialModel : Model
 initialModel =
     { email = { initialField | visible = True }
     , password = initialField
-    , userId = ""
+    , userId = Nothing
     , loading = False
     , settings = initialSettings
     }

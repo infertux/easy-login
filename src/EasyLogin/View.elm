@@ -8,12 +8,21 @@ import EasyLogin.Model exposing (..)
 
 view : Model -> Html Msg
 view model =
-    Html.form [ onSubmit LogIn ] <|
-        List.concat
-            [ emailInput model.email
-            , passwordInput model.password
-            , buttons model
-            ]
+    case model.userId of
+        Just _ ->
+            Html.div [ class "alert alert-success" ]
+                [ span [] [ text "Check your emails at " ]
+                , strong [] [ text model.email.value ]
+                , span [] [ text "." ]
+                ]
+
+        Nothing ->
+            Html.form [ onSubmit LogIn ] <|
+                List.concat
+                    [ emailInput model.email
+                    , passwordInput model.password
+                    , buttons model
+                    ]
 
 
 emailInput : Field -> List (Html Msg)

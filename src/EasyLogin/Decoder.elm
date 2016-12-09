@@ -1,4 +1,4 @@
-module EasyLogin.Decoder exposing (signIn, decodeSession)
+module EasyLogin.Decoder exposing (signIn, getUserId)
 
 import Json.Decode
 import Json.Encode
@@ -37,8 +37,8 @@ request body url =
     JsonApiExtra.post url body Model.LogInResult JsonApi.Decode.document
 
 
-decodeSession : Document -> String
-decodeSession document =
+getUserId : Document -> Maybe String
+getUserId document =
     case JsonApi.Documents.primaryResource document of
         Err error ->
             Debug.crash error
@@ -47,12 +47,13 @@ decodeSession document =
             decodeSesionAttributes session
 
 
-decodeSesionAttributes : Resource -> String
+decodeSesionAttributes : Resource -> Maybe String
 decodeSesionAttributes session =
     let
         decoder =
-            Json.Decode.field "user-id" Json.Decode.string
+            Json.Decode.field "user-id" <|
+                Json.Decode.nullable Json.Decode.string
     in
         JsonApi.Resources.attributes decoder session
             |> Result.toMaybe
-            |> Maybe.withDefault ""
+            |> Maybe.withDefault Nothing
