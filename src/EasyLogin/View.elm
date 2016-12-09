@@ -61,20 +61,14 @@ formGroup field input =
         error =
             errorBlock field.error
 
-        errored =
-            error /= []
-
         errorClass =
-            if errored then
-                " has-danger"
-            else
+            if field.error == Nothing then
                 ""
+            else
+                " has-danger"
     in
         [ div [ class <| "form-group" ++ errorClass ] <|
-            List.concat
-                [ showIf field.visible input
-                , error
-                ]
+            List.concat [ showIf field.visible input, error ]
         ]
 
 
@@ -123,14 +117,14 @@ noPasswordButton : List (Html Msg)
 noPasswordButton =
     [ a
         [ class "btn btn-secondary btn-block mt-1"
-        , href "#"
+        , href "javascript:void(0)"
         , onClick SendPassword
         ]
         [ text "Don't know your password?" ]
     ]
 
 
-showIf : Bool -> List (Html Msg) -> List (Html Msg)
+showIf : Bool -> List a -> List a
 showIf condition html =
     if condition then
         html

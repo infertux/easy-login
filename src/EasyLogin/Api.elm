@@ -1,4 +1,4 @@
-module EasyLogin.Decoder exposing (signIn, getUserId)
+module EasyLogin.Api exposing (signIn, getUserId, sendPassword)
 
 import Json.Decode
 import Json.Encode
@@ -57,3 +57,24 @@ decodeSesionAttributes session =
         JsonApi.Resources.attributes decoder session
             |> Result.toMaybe
             |> Maybe.withDefault Nothing
+
+
+sendPassword : String -> String -> Cmd Model.Msg
+sendPassword path email =
+    let
+        attributes =
+            Json.Encode.object
+                [ ( "email", Json.Encode.string email )
+                ]
+
+        body =
+            Json.Encode.object
+                [ ( "data"
+                  , Json.Encode.object
+                        [ ( "type", Json.Encode.string "sessions" )
+                        , ( "attributes", attributes )
+                        ]
+                  )
+                ]
+    in
+        request body path

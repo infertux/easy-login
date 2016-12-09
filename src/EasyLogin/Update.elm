@@ -2,7 +2,7 @@ port module EasyLogin.Update exposing (init, update)
 
 import Http
 import EasyLogin.Model exposing (..)
-import EasyLogin.Decoder as Decoder
+import EasyLogin.Api as Api
 
 
 {-| Port will send userId if logged in successfully
@@ -35,7 +35,7 @@ update msg model =
 
         LogIn ->
             ( { model | loading = True }
-            , Decoder.signIn
+            , Api.signIn
                 model.settings.loginPath
                 model.email.value
                 model.password.value
@@ -44,17 +44,14 @@ update msg model =
         LogInResult (Ok document) ->
             let
                 userId =
-                    Decoder.getUserId document
+                    Api.getUserId document
 
                 reload =
                     userId
                         /= Nothing
                         && not (String.isEmpty model.password.value)
             in
-                ( { model
-                    | userId = userId
-                    , loading = reload
-                  }
+                ( { model | userId = userId, loading = reload }
                 , if reload then
                     onSuccess <| Maybe.withDefault "" userId
                   else
@@ -83,12 +80,11 @@ update msg model =
                 password =
                     { oldPassword | error = message, visible = True }
             in
-                ( { model
-                    | loading = False
-                    , password = password
-                  }
-                , Cmd.none
-                )
+                ( { model | loading = False, password = password }, Cmd.none )
 
         SendPassword ->
-            Debug.crash model.email.value
+            ( { model | userId = Just "dummy" }
+            , Api.sendPassword
+                model.settings.lostPasswordPath
+                model.email.value
+            )

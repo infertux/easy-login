@@ -21,7 +21,7 @@
     const elmEasyLoginDiv = document.querySelector("#elm-easy-login-app");
     const elmEasyLoginApp = Elm.EasyLogin.embed(elmEasyLoginDiv,
       { loginPath:        "/api/sessions"
-      , lostPasswordPath: "/api/lost-password?userId=%s" }
+      , lostPasswordPath: "/api/lost-password" }
     );
 
     elmEasyLoginApp.ports.onSuccess.subscribe(function(userId) {

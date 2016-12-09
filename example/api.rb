@@ -42,6 +42,16 @@ post "/api/sessions" do
   end
 end
 
+post "/api/lost-password" do
+  body = JSON.parse request.body.read
+  attributes = body.dig("data", "attributes")
+  email = attributes.fetch("email")
+
+  puts "Send login email to #{email}"
+
+  status 204
+end
+
 get "/dashboard" do
   "Welcome #{request.cookies.inspect}!"
 end

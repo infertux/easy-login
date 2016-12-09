@@ -49,7 +49,7 @@ initialField =
 initialSettings : Settings
 initialSettings =
     { loginPath = "/api/sessions"
-    , lostPasswordPath = "/api/lost-password?userId=%s"
+    , lostPasswordPath = "/api/lost-password"
     }
 
 
